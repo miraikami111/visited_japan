@@ -2,6 +2,9 @@
 
 https://miraikami111.github.io/visited_japan/
 
+https://miraikami111.github.io/visited_japan/
+
+
 🔄 1. 変更をステージング
 git add .
 
