@@ -1,0 +1,41 @@
+# ---------- 検索UI ----------
+# --- Search UI (append to generated HTML to avoid Jinja issues) ---
+search_ui = """
+<style>
+#searchBox {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  width: 280px;
+}
+#searchResults {
+  margin-top: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.resultItem {
+  cursor: pointer;
+  padding: 6px;
+  border-bottom: 1px solid #eee;
+}
+.resultItem:hover { background: #f3f3f3; 
+}
+.leaflet-tooltip {
+  pointer-events: none;     /* ツールチップがクリックを邪魔しない */
+}
+.leaflet-interactive:focus {
+  outline: none !important;
+}
+
+</style>
+
+<div id="searchBox">
+  <input type="text" id="tagInput" placeholder="#tagで検索" style="width:100%; padding:6px;">
+  <div id="searchResults"></div>
+</div>
+"""

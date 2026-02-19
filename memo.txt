@@ -62,3 +62,12 @@ visited_japan/
    ├─ akw3.jpg
    ├─ oka1.jpg
    └─ oka2.jpg
+
+
+   visited_japan/
+├── visited_japan.py
+├── prefectures.geojson
+├── images/
+├── templates/
+│   ├── search_ui.html
+│   ├── search_js.js

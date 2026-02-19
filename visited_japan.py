@@ -35,7 +35,7 @@ def style_function(feature):
     return {"fillColor": "lightgray", "color": "black", "weight": 1, "fillOpacity": 0.3}
 
 def highlight_function(_feature):
-    return {"fillColor": "yellow", "color": "orange", "weight": 3, "fillOpacity": 0.9}
+    return {"fillColor": "yellow", "color": "black", "weight": 1, "fillOpacity": 0.9}
 
 def popup_html(pref_name: str) -> str:
     data = info_data.get(pref_name)
@@ -76,11 +76,13 @@ for feature in geo_json["features"]:
         feature,
         style_function=style_function,
         highlight_function=highlight_function,
+        control=False,
     ).add_to(m)
 
     
 
     # Hover tooltip（写真 + 県名）
+   
     gj.add_child(folium.Tooltip(tooltip_html(pref_name), sticky=False))
 
     # Dblclick modal（複数写真 + 詳細）
@@ -109,188 +111,37 @@ for feature in geo_json["features"]:
     gj.add_child(folium.Element(js_code))
 
     
-   
+  # ---------- 検索UI & JS 読み込み ----------
 
+# UI読み込み
+with open("templates/search_ui.html", encoding="utf-8") as f:
+    search_ui = f.read()
 
-   
-# ---------- 検索UI ----------
-# --- Search UI (append to generated HTML to avoid Jinja issues) ---
-search_ui = """
-<style>
-#searchBox {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  z-index: 9999;
-  width: 280px;
-}
-#searchResults {
-  margin-top: 8px;
-  max-height: 240px;
-  overflow-y: auto;
-}
-.resultItem {
-  cursor: pointer;
-  padding: 6px;
-  border-bottom: 1px solid #eee;
-}
-.resultItem:hover { background: #f3f3f3; 
-}
-.leaflet-tooltip {
-  pointer-events: none;     /* ツールチップがクリックを邪魔しない */
-}
-</style>
-
-<div id="searchBox">
-  <input type="text" id="tagInput" placeholder="#tagで検索" style="width:100%; padding:6px;">
-  <div id="searchResults"></div>
-</div>
-"""
-
+# JS読み込み
 info_json = json.dumps(info_data, ensure_ascii=False)
 
-search_js = """
-<script>
-  var infoData = __INFO_JSON__;
+with open("templates/search_js.js", encoding="utf-8") as f:
+    search_js = f.read()
 
-  function openModal(pref) {
-    var data = infoData[pref] || {};
-    var imgs = data.images || [];
-    var text = data.text || "";
-
-    var old = document.getElementById('modal');
-    if (old) old.remove();
-
-    var modal = document.createElement('div');
-    modal.id = 'modal';
-    modal.style.position = 'fixed';
-    modal.style.inset = '0';
-    modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-    modal.style.display = 'flex';
-    modal.style.justifyContent = 'center';
-    modal.style.alignItems = 'center';
-    modal.style.zIndex = '10000';
-
-    var content = document.createElement('div');
-    content.style.backgroundColor = 'white';
-    content.style.padding = '12px';
-    content.style.maxWidth = '900px';
-    content.style.width = '90%';
-    content.style.maxHeight = '85%';
-    content.style.overflow = 'auto';
-    content.style.borderRadius = '10px';
-
-    var title = document.createElement('h2');
-    title.textContent = pref;
-    title.style.margin = '0 0 10px 0';
-    content.appendChild(title);
-
-    var closeBtn = document.createElement('button');
-    closeBtn.textContent = '閉じる';
-    closeBtn.onclick = function() { modal.remove(); };
-    closeBtn.style.marginBottom = '10px';
-    content.appendChild(closeBtn);
-
-    if (imgs.length > 0) {
-      var index = 0;
-      var imgTag = document.createElement('img');
-      imgTag.src = imgs[0];
-      imgTag.style.width = '100%';
-      imgTag.style.maxHeight = '55vh';
-      imgTag.style.objectFit = 'contain';
-      imgTag.style.background = '#111';
-      imgTag.style.borderRadius = '8px';
-      content.appendChild(imgTag);
-
-      if (imgs.length > 1) {
-        var nextBtn = document.createElement('button');
-        nextBtn.textContent = '次の写真';
-        nextBtn.style.marginTop = '8px';
-        nextBtn.onclick = function() {
-          index = (index + 1) % imgs.length;
-          imgTag.src = imgs[index];
-        };
-        content.appendChild(nextBtn);
-      }
-    } else {
-      var noImg = document.createElement('div');
-      noImg.textContent = '(写真なし)';
-      noImg.style.color = '#666';
-      content.appendChild(noImg);
-    }
-
-    var p = document.createElement('p');
-    p.textContent = text || '';
-    p.style.marginTop = '10px';
-    content.appendChild(p);
-
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) modal.remove();
-    });
-
-    modal.appendChild(content);
-    document.body.appendChild(modal);
-  }
-
-  function renderResult(pref) {
-    var images = (infoData[pref] && infoData[pref].images) || [];
-    var tags = (infoData[pref] && infoData[pref].tags) || [];
-    var imgHtml = "";
-    if (images.length > 0) {
-      imgHtml = '<img src="' + images[0] + '" style="width:60px;height:auto;border-radius:6px;">';
-    }
-
-    return (
-      '<div style="display:flex;align-items:center;gap:8px;">' +
-        imgHtml +
-        '<div>' +
-          '<div style="font-weight:bold;">' + pref + '</div>' +
-          '<div style="font-size:12px;color:#666;">' + tags.join(' ') + '</div>' +
-        '</div>' +
-      '</div>'
-    );
-  }
-
-  document.addEventListener("DOMContentLoaded", function() {
-    var input = document.getElementById("tagInput");
-    var resultsDiv = document.getElementById("searchResults");
-
-    input.addEventListener("input", function() {
-      var query = input.value.trim();
-      resultsDiv.innerHTML = "";
-
-      if (!query.startsWith("#")) return;
-
-      Object.keys(infoData).forEach(function(pref) {
-        var tags = infoData[pref].tags || [];
-        if (tags.indexOf(query) !== -1) {
-          var div = document.createElement("div");
-          div.className = "resultItem";
-          div.innerHTML = renderResult(pref);
-          div.onclick = function() { openModal(pref); };
-          resultsDiv.appendChild(div);
-        }
-      });
-    });
-  });
-</script>
-"""
 search_js = search_js.replace("__INFO_JSON__", info_json)
+search_js = "<script>\n" + search_js + "\n</script>\n"
 
+
+# ---------- HTML生成 ----------
 
 # まず地図HTMLを保存
 m.save("index.html")
 
 # 生成された index.html の </body> の直前に検索UIを差し込む
 with open("index.html", "r", encoding="utf-8") as f:
-  html = f.read()
+    html = f.read()
 
-insert = search_ui + search_js
-html = html.replace("</body>", insert + "\n</body>")
+insert = search_ui + "\n" + search_js
+
+if "</body>" in html:
+    html = html.replace("</body>", insert + "\n</body>")
+else:
+    print("⚠️ </body> が見つかりませんでした")
 
 with open("index.html", "w", encoding="utf-8") as f:
-  f.write(html)
+    f.write(html)
