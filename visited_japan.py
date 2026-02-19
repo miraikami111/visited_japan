@@ -93,246 +93,21 @@ for feature in geo_json["features"]:
     text_js = json.dumps(text, ensure_ascii=False)
     name_js = json.dumps(pref_name, ensure_ascii=False)
 
-    js_code = f"""
-    <script>
-      (function() {{
-        var layer = {gj.get_name()};
-        var prefName = {name_js};
-        var imgs = {imgs_js};
-        var text = {text_js};
-
-        layer.on('dblclick', function() {{
-          var old = document.getElementById('modal');
-          if (old) old.remove();
-
-          var modal = document.createElement('div');
-          modal.id = 'modal';
-          modal.style.position = 'fixed';
-          modal.style.inset = '0';
-          modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-          modal.style.display = 'flex';
-          modal.style.justifyContent = 'center';
-          modal.style.alignItems = 'center';
-          modal.style.zIndex = '10000';
-
-          var content = document.createElement('div');
-          content.style.backgroundColor = 'white';
-          content.style.padding = '12px';
-          content.style.maxWidth = '900px';
-          content.style.width = '90%';
-          content.style.maxHeight = '85%';
-          content.style.overflow = 'auto';
-          content.style.borderRadius = '10px';
-
-          var title = document.createElement('h2');
-          title.textContent = prefName;
-          title.style.margin = '0 0 10px 0';
-          content.appendChild(title);
-
-          var closeBtn = document.createElement('button');
-          closeBtn.textContent = '閉じる';
-          closeBtn.onclick = function() {{ modal.remove(); }};
-          closeBtn.style.marginBottom = '10px';
-          content.appendChild(closeBtn);
-
-          if (imgs.length > 0) {{
-            var index = 0;
-            var imgTag = document.createElement('img');
-            imgTag.src = imgs[0];
-            imgTag.style.width = '100%';
-            imgTag.style.maxHeight = '55vh';
-            imgTag.style.objectFit = 'contain';
-            imgTag.style.background = '#111';
-            imgTag.style.borderRadius = '8px';
-            content.appendChild(imgTag);
-
-            if (imgs.length > 1) {{
-              var nextBtn = document.createElement('button');
-              nextBtn.textContent = '次の写真';
-              nextBtn.style.marginTop = '8px';
-              nextBtn.onclick = function() {{
-                index = (index + 1) % imgs.length;
-                imgTag.src = imgs[index];
-              }};
-              content.appendChild(nextBtn);
-            }}
-          }} else {{
-            var noImg = document.createElement('div');
-            noImg.textContent = '(写真なし)';
-            noImg.style.color = '#666';
-            content.appendChild(noImg);
-          }}
-
-          var p = document.createElement('p');
-          p.textContent = text || '';
-          p.style.marginTop = '10px';
-          content.appendChild(p);
-
-          modal.addEventListener('click', function(e) {{
-            if (e.target === modal) modal.remove();
-          }});
-
-          modal.appendChild(content);
-          document.body.appendChild(modal);
-        }});
-      }})();
-    </script>
-    """
-    gj.add_child(folium.Element(js_code))
-
-m.get_root().html.add_child(folium.Element("""
-<style>
-  html, body { height:100%; margin:0; }
-  #map { height:100vh; width:100vw; }
-</style>
-"""))
-
-search_js = """
-<style>
-#searchBox {{
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    z-index: 9999;
-    width: 250px;
-}}
-
-#searchResults {{
-    margin-top: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-}}
-.resultItem {{
-    cursor: pointer;
-    padding: 5px;
-    border-bottom: 1px solid #eee;
-}}
-.resultItem:hover {{
-    background: #f0f0f0;
-}}
-</style>
-
-<div id="searchBox">
-  <input type="text" id="tagInput" placeholder="#tagで検索" style="width:100%;">
-  <div id="searchResults"></div>
-</div>
-
+js_code = f"""
 <script>
-var infoData = {json.dumps(info_data, ensure_ascii=False)};
+(function() {{
+  var layer = {gj.get_name()};
+  var prefName = {name_js};
 
-function openModal(pref) {
-  var data = infoData[pref] || {};
-  var imgs = data.images || [];
-  var text = data.text || "";
-
-  var old = document.getElementById('modal');
-  if (old) old.remove();
-
-  var modal = document.createElement('div');
-  modal.id = 'modal';
-  modal.style.position = 'fixed';
-  modal.style.inset = '0';
-  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-  modal.style.display = 'flex';
-  modal.style.justifyContent = 'center';
-  modal.style.alignItems = 'center';
-  modal.style.zIndex = '10000';
-
-  var content = document.createElement('div');
-  content.style.backgroundColor = 'white';
-  content.style.padding = '12px';
-  content.style.maxWidth = '900px';
-  content.style.width = '90%';
-  content.style.maxHeight = '85%';
-  content.style.overflow = 'auto';
-  content.style.borderRadius = '10px';
-
-  var title = document.createElement('h2');
-  title.textContent = pref;
-  content.appendChild(title);
-
-  var closeBtn = document.createElement('button');
-  closeBtn.textContent = '閉じる';
-  closeBtn.onclick = function() { modal.remove(); };
-  content.appendChild(closeBtn);
-
-  if (imgs.length > 0) {
-    var index = 0;
-    var imgTag = document.createElement('img');
-    imgTag.src = imgs[0];
-    imgTag.style.width = '100%';
-    content.appendChild(imgTag);
-
-    if (imgs.length > 1) {
-      var nextBtn = document.createElement('button');
-      nextBtn.textContent = '次の写真';
-      nextBtn.onclick = function() {
-        index = (index + 1) % imgs.length;
-        imgTag.src = imgs[index];
-      };
-      content.appendChild(nextBtn);
-    }
-  }
-
-  var p = document.createElement('p');
-  p.textContent = text;
-  content.appendChild(p);
-
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) modal.remove();
-  });
-
-  modal.appendChild(content);
-  document.body.appendChild(modal);
-}
-
-
-var mapObj = {m.get_name()};
-
-document.getElementById("tagInput").addEventListener("input", function() {{
-    var query = this.value.trim();
-    var resultsDiv = document.getElementById("searchResults");
-    resultsDiv.innerHTML = "";
-
-    if (!query.startsWith("#")) return;
-
-    Object.keys(infoData).forEach(function(pref) {{
-        var tags = infoData[pref].tags || [];
-        if (tags.includes(query)) {{
-            var div = document.createElement("div");
-            div.className = "resultItem";
-            var img = "";
-            var images = infoData[pref].images || [];
-            if (images.length > 0) {
-             img = `<img src="${images[0]}" style="width:60px;height:auto;border-radius:6px;margin-right:8px;">`;
-            }       
-            div.innerHTML = `
-              <div style="display:flex;align-items:center;gap:8px;">
-                ${img}
-            <div>
-                <div style="font-weight:bold;">${pref}</div>
-                <div style="font-size:12px;color:#666;">${(infoData[pref].tags||[]).join(" ")}</div>
-              </div>
-            </div>
-            `;
-
-            div.onclick = function() {
-                openModal(pref);
-            };
-
-            resultsDiv.appendChild(div);
-        }}
-    }});
-}});
+  layer.on('dblclick', function() {{
+    openModal(prefName);
+  }});
+}})();
 </script>
 """
+gj.add_child(folium.Element(js_code))
 
-
-
+   
 # ---------- 検索UI ----------
 # --- Search UI (append to generated HTML to avoid Jinja issues) ---
 search_ui = """
@@ -372,6 +147,86 @@ info_json = json.dumps(info_data, ensure_ascii=False)
 search_js = f"""
 <script>
   var infoData = {info_json};
+  function openModal(pref) {
+  var data = infoData[pref] || {};
+  var imgs = data.images || [];
+  var text = data.text || "";
+
+  var old = document.getElementById('modal');
+  if (old) old.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'modal';
+  modal.style.position = 'fixed';
+  modal.style.inset = '0';
+  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+  modal.style.display = 'flex';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+  modal.style.zIndex = '10000';
+
+  var content = document.createElement('div');
+  content.style.backgroundColor = 'white';
+  content.style.padding = '12px';
+  content.style.maxWidth = '900px';
+  content.style.width = '90%';
+  content.style.maxHeight = '85%';
+  content.style.overflow = 'auto';
+  content.style.borderRadius = '10px';
+
+  var title = document.createElement('h2');
+  title.textContent = pref;
+  title.style.margin = '0 0 10px 0';
+  content.appendChild(title);
+
+  var closeBtn = document.createElement('button');
+  closeBtn.textContent = '閉じる';
+  closeBtn.onclick = function() { modal.remove(); };
+  closeBtn.style.marginBottom = '10px';
+  content.appendChild(closeBtn);
+
+  if (imgs.length > 0) {
+    var index = 0;
+    var imgTag = document.createElement('img');
+    imgTag.src = imgs[0];
+    imgTag.style.width = '100%';
+    imgTag.style.maxHeight = '55vh';
+    imgTag.style.objectFit = 'contain';
+    imgTag.style.background = '#111';
+    imgTag.style.borderRadius = '8px';
+    content.appendChild(imgTag);
+
+    if (imgs.length > 1) {
+      var nextBtn = document.createElement('button');
+      nextBtn.textContent = '次の写真';
+      nextBtn.style.marginTop = '8px';
+      nextBtn.onclick = function() {
+        index = (index + 1) % imgs.length;
+        imgTag.src = imgs[index];
+      };
+      content.appendChild(nextBtn);
+    }
+  } else {
+    var noImg = document.createElement('div');
+    noImg.textContent = '(写真なし)';
+    noImg.style.color = '#666';
+    content.appendChild(noImg);
+  }
+
+  var p = document.createElement('p');
+  p.textContent = text || '';
+  p.style.marginTop = '10px';
+  content.appendChild(p);
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) modal.remove();
+  });
+
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+}
+
+
 
   function renderResult(pref) {{
     var images = infoData[pref].images || [];
@@ -407,9 +262,11 @@ search_js = f"""
         if (tags.indexOf(query) !== -1) {{
           var div = document.createElement("div");
           div.className = "resultItem";
+
           div.innerHTML = renderResult(pref);
+
           div.onclick = function() {{
-            alert(pref); // 次でズーム＆モーダルにする
+            openModal(pref); // クリックしたら表示
           }};
           resultsDiv.appendChild(div);
         }}
