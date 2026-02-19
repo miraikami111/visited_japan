@@ -1,133 +1,180 @@
 import folium
 import json
-import base64
+import os
 
-# GeoJSON読み込み
+# --- Data ---
 with open("prefectures.geojson", encoding="utf-8") as f:
     geo_json = json.load(f)
 
 visited = ["北海道", "東京都", "京都府", "沖縄県"]
 
-# 複数写真＋詳細テキスト
 info_data = {
     "北海道": {
-        "images": ["akw1.jpg", "akw2.jpg", "akw3.jpg"],
+        "images": ["images/akw1.jpg"],
         "text": "北海道：自然豊かで食べ物が美味しい地域。観光名所や温泉も豊富です。"
     },
     "沖縄県": {
-        "images": ["oka1.jpg", "oka2.jpg"],
+        "images": ["images/oka.jpg"],
         "text": "沖縄県：美しい海と独自文化。琉球王国の歴史も楽しめます。"
     },
 }
 
-# 地図作成
-m = folium.Map(location=[37.5, 137], zoom_start=5, control_scale=True, height=900)
+# --- Map (offline: no tiles) ---
+m = folium.Map(
+    location=[37.5, 137],
+    zoom_start=5,
+    tiles=None,
+    control_scale=True,
+)
 
-# 色分け関数
 def style_function(feature):
     name = feature["properties"]["name"]
     if name in visited:
         return {"fillColor": "green", "color": "black", "weight": 1, "fillOpacity": 0.7}
-    else:
-        return {"fillColor": "lightgray", "color": "black", "weight": 1, "fillOpacity": 0.3}
+    return {"fillColor": "lightgray", "color": "black", "weight": 1, "fillOpacity": 0.3}
 
-def highlight_function(feature):
+def highlight_function(_feature):
     return {"fillColor": "yellow", "color": "orange", "weight": 3, "fillOpacity": 0.9}
 
-# 通常ポップアップ（地図上1枚表示）
-def popup_html(name):
-    if name in info_data:
-        img_path = info_data[name]["images"][0]  # 最初の画像のみ
-        text = info_data[name]["text"]
-        encoded = base64.b64encode(open(img_path, "rb").read()).decode()
-        html = f"""
-        <div style="width:200px">
-            <img src="data:image/jpeg;base64,{encoded}" width="180"><br>
-            <p>{text}</p>
-        </div>
-        """
-        return html
-    else:
-        return f"<b>{name}</b>（情報なし）"
+def popup_html(pref_name: str) -> str:
+    data = info_data.get(pref_name)
+    if not data:
+        return f"<b>{pref_name}</b><br><span style='color:#666'>(情報なし)</span>"
 
-# GeoJSON追加
+    images = data.get("images", [])
+    text = data.get("text", "")
+
+    img_html = "<div style='color:#666'>(写真なし)</div>"
+    if images:
+        img_path = images[0]
+        if os.path.exists(img_path):
+            img_html = f'<img src="{img_path}" width="180"><br>'
+
+    return f"""
+    <div style="width:200px">
+        <b>{pref_name}</b><br>
+        {img_html}
+        <p>{text}</p>
+    </div>
+    """
+
 for feature in geo_json["features"]:
-    name = feature["properties"]["name"]
-    popup = folium.Popup(popup_html(name), max_width=250)
+    pref_name = feature["properties"]["name"]
 
     gj = folium.GeoJson(
         feature,
         style_function=style_function,
         highlight_function=highlight_function,
         tooltip=folium.GeoJsonTooltip(fields=["name"], labels=False),
-    )
-    gj.add_child(popup)
-    gj.add_to(m)
+    ).add_to(m)
 
-    # ダブルクリックでモーダル表示用 JavaScript
-    images = info_data.get(name, {}).get("images", [])
-    text = info_data.get(name, {}).get("text", "")
-    img_base64_list = [base64.b64encode(open(img, "rb").read()).decode() for img in images]
+    # Click popup (simple)
+    gj.add_child(folium.Popup(popup_html(pref_name), max_width=260))
+
+    # Dblclick modal (multi images + text) using file paths (no base64)
+    data = info_data.get(pref_name, {})
+    imgs = [p for p in data.get("images", []) if os.path.exists(p)]
+    text = data.get("text", "")
+
+    imgs_js = json.dumps(imgs, ensure_ascii=False)
+    text_js = json.dumps(text, ensure_ascii=False)
+    name_js = json.dumps(pref_name, ensure_ascii=False)
 
     js_code = f"""
     <script>
-    var layer = {gj.get_name()};
-    layer.on('dblclick', function(e) {{
-        var modal = document.createElement('div');
-        modal.id = 'modal';
-        modal.style.position = 'fixed';
-        modal.style.top = '0'; modal.style.left = '0';
-        modal.style.width = '100%'; modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-        modal.style.display = 'flex'; modal.style.justifyContent = 'center'; modal.style.alignItems = 'center';
-        modal.style.zIndex = '10000';
+      (function() {{
+        var layer = {gj.get_name()};
+        var prefName = {name_js};
+        var imgs = {imgs_js};
+        var text = {text_js};
 
-        var content = document.createElement('div');
-        content.style.backgroundColor = 'white'; content.style.padding = '10px';
-        content.style.maxWidth = '80%'; content.style.maxHeight = '80%'; content.style.overflow = 'auto';
+        layer.on('dblclick', function() {{
+          // remove existing modal
+          var old = document.getElementById('modal');
+          if (old) old.remove();
 
-        var closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '閉じる';
-        closeBtn.onclick = function(){{ document.body.removeChild(modal); }};
-        content.appendChild(closeBtn);
+          var modal = document.createElement('div');
+          modal.id = 'modal';
+          modal.style.position = 'fixed';
+          modal.style.inset = '0';
+          modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+          modal.style.display = 'flex';
+          modal.style.justifyContent = 'center';
+          modal.style.alignItems = 'center';
+          modal.style.zIndex = '10000';
 
-        // 写真スライダー
-        var imgs = {img_base64_list};
-        var imgTag = document.createElement('img');
-        imgTag.src = 'data:image/jpeg;base64,' + imgs[0];
-        imgTag.style.maxWidth = '100%';
-        content.appendChild(imgTag);
+          var content = document.createElement('div');
+          content.style.backgroundColor = 'white';
+          content.style.padding = '12px';
+          content.style.maxWidth = '900px';
+          content.style.width = '90%';
+          content.style.maxHeight = '85%';
+          content.style.overflow = 'auto';
+          content.style.borderRadius = '10px';
 
-        if(imgs.length > 1){{
+          var title = document.createElement('h2');
+          title.textContent = prefName;
+          title.style.margin = '0 0 10px 0';
+          content.appendChild(title);
+
+          var closeBtn = document.createElement('button');
+          closeBtn.textContent = '閉じる';
+          closeBtn.onclick = function() {{ modal.remove(); }};
+          closeBtn.style.marginBottom = '10px';
+          content.appendChild(closeBtn);
+
+          // image area
+          if (imgs.length > 0) {{
             var index = 0;
-            var nextBtn = document.createElement('button');
-            nextBtn.innerHTML = '次の写真';
-            nextBtn.onclick = function(){{
+            var imgTag = document.createElement('img');
+            imgTag.src = imgs[0];
+            imgTag.style.width = '100%';
+            imgTag.style.maxHeight = '55vh';
+            imgTag.style.objectFit = 'contain';
+            imgTag.style.background = '#111';
+            imgTag.style.borderRadius = '8px';
+            content.appendChild(imgTag);
+
+            if (imgs.length > 1) {{
+              var nextBtn = document.createElement('button');
+              nextBtn.textContent = '次の写真';
+              nextBtn.style.marginTop = '8px';
+              nextBtn.onclick = function() {{
                 index = (index + 1) % imgs.length;
-                imgTag.src = 'data:image/jpeg;base64,' + imgs[index];
-            }};
-            content.appendChild(nextBtn);
-        }}
+                imgTag.src = imgs[index];
+              }};
+              content.appendChild(nextBtn);
+            }}
+          }} else {{
+            var noImg = document.createElement('div');
+            noImg.textContent = '(写真なし)';
+            noImg.style.color = '#666';
+            content.appendChild(noImg);
+          }}
 
-        // 詳細テキスト
-        var p = document.createElement('p');
-        p.innerHTML = "{text}";
-        content.appendChild(p);
+          var p = document.createElement('p');
+          p.textContent = text || '';
+          p.style.marginTop = '10px';
+          content.appendChild(p);
 
-        modal.appendChild(content);
-        document.body.appendChild(modal);
-    }});
+          // click outside to close
+          modal.addEventListener('click', function(e) {{
+            if (e.target === modal) modal.remove();
+          }});
+
+          modal.appendChild(content);
+          document.body.appendChild(modal);
+        }});
+      }})();
     </script>
     """
     gj.add_child(folium.Element(js_code))
 
-# 高さ調整
 m.get_root().html.add_child(folium.Element("""
 <style>
-html, body {{height:100%; margin:0;}}
-#map {{height:100%; width:100%;}}
+  html, body { height:100%; margin:0; }
+  #map { height:100vh; width:100vw; }
 </style>
 """))
 
-# 保存
 m.save("index.html")

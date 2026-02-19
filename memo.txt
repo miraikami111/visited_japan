@@ -52,3 +52,13 @@ git branch
 
 
 
+visited_japan/
+├─ visited_japan.py
+├─ prefectures.geojson
+├─ index.html（自動生成）
+└─ images/
+   ├─ akw1.jpg
+   ├─ akw2.jpg
+   ├─ akw3.jpg
+   ├─ oka1.jpg
+   └─ oka2.jpg
