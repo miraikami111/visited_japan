@@ -78,11 +78,10 @@ for feature in geo_json["features"]:
         highlight_function=highlight_function,
     ).add_to(m)
 
-    # Click popup
-    gj.add_child(folium.Popup(popup_html(pref_name), max_width=260))
+    
 
     # Hover tooltip（写真 + 県名）
-    gj.add_child(folium.Tooltip(tooltip_html(pref_name), sticky=True))
+    gj.add_child(folium.Tooltip(tooltip_html(pref_name), sticky=False))
 
     # Dblclick modal（複数写真 + 詳細）
     data = info_data.get(pref_name, {})
@@ -91,21 +90,27 @@ for feature in geo_json["features"]:
 
     imgs_js = json.dumps(imgs, ensure_ascii=False)
     text_js = json.dumps(text, ensure_ascii=False)
+    
+
     name_js = json.dumps(pref_name, ensure_ascii=False)
 
-js_code = f"""
+    js_code = f"""
 <script>
 (function() {{
   var layer = {gj.get_name()};
   var prefName = {name_js};
 
-  layer.on('dblclick', function() {{
+  layer.on('click', function() {{
     openModal(prefName);
   }});
 }})();
 </script>
 """
-gj.add_child(folium.Element(js_code))
+    gj.add_child(folium.Element(js_code))
+
+    
+   
+
 
    
 # ---------- 検索UI ----------
@@ -133,7 +138,11 @@ search_ui = """
   padding: 6px;
   border-bottom: 1px solid #eee;
 }
-.resultItem:hover { background: #f3f3f3; }
+.resultItem:hover { background: #f3f3f3; 
+}
+.leaflet-tooltip {
+  pointer-events: none;     /* ツールチップがクリックを邪魔しない */
+}
 </style>
 
 <div id="searchBox">
@@ -144,97 +153,96 @@ search_ui = """
 
 info_json = json.dumps(info_data, ensure_ascii=False)
 
-search_js = f"""
+search_js = """
 <script>
-  var infoData = {info_json};
+  var infoData = __INFO_JSON__;
+
   function openModal(pref) {
-  var data = infoData[pref] || {};
-  var imgs = data.images || [];
-  var text = data.text || "";
+    var data = infoData[pref] || {};
+    var imgs = data.images || [];
+    var text = data.text || "";
 
-  var old = document.getElementById('modal');
-  if (old) old.remove();
+    var old = document.getElementById('modal');
+    if (old) old.remove();
 
-  var modal = document.createElement('div');
-  modal.id = 'modal';
-  modal.style.position = 'fixed';
-  modal.style.inset = '0';
-  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-  modal.style.display = 'flex';
-  modal.style.justifyContent = 'center';
-  modal.style.alignItems = 'center';
-  modal.style.zIndex = '10000';
+    var modal = document.createElement('div');
+    modal.id = 'modal';
+    modal.style.position = 'fixed';
+    modal.style.inset = '0';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '10000';
 
-  var content = document.createElement('div');
-  content.style.backgroundColor = 'white';
-  content.style.padding = '12px';
-  content.style.maxWidth = '900px';
-  content.style.width = '90%';
-  content.style.maxHeight = '85%';
-  content.style.overflow = 'auto';
-  content.style.borderRadius = '10px';
+    var content = document.createElement('div');
+    content.style.backgroundColor = 'white';
+    content.style.padding = '12px';
+    content.style.maxWidth = '900px';
+    content.style.width = '90%';
+    content.style.maxHeight = '85%';
+    content.style.overflow = 'auto';
+    content.style.borderRadius = '10px';
 
-  var title = document.createElement('h2');
-  title.textContent = pref;
-  title.style.margin = '0 0 10px 0';
-  content.appendChild(title);
+    var title = document.createElement('h2');
+    title.textContent = pref;
+    title.style.margin = '0 0 10px 0';
+    content.appendChild(title);
 
-  var closeBtn = document.createElement('button');
-  closeBtn.textContent = '閉じる';
-  closeBtn.onclick = function() { modal.remove(); };
-  closeBtn.style.marginBottom = '10px';
-  content.appendChild(closeBtn);
+    var closeBtn = document.createElement('button');
+    closeBtn.textContent = '閉じる';
+    closeBtn.onclick = function() { modal.remove(); };
+    closeBtn.style.marginBottom = '10px';
+    content.appendChild(closeBtn);
 
-  if (imgs.length > 0) {
-    var index = 0;
-    var imgTag = document.createElement('img');
-    imgTag.src = imgs[0];
-    imgTag.style.width = '100%';
-    imgTag.style.maxHeight = '55vh';
-    imgTag.style.objectFit = 'contain';
-    imgTag.style.background = '#111';
-    imgTag.style.borderRadius = '8px';
-    content.appendChild(imgTag);
+    if (imgs.length > 0) {
+      var index = 0;
+      var imgTag = document.createElement('img');
+      imgTag.src = imgs[0];
+      imgTag.style.width = '100%';
+      imgTag.style.maxHeight = '55vh';
+      imgTag.style.objectFit = 'contain';
+      imgTag.style.background = '#111';
+      imgTag.style.borderRadius = '8px';
+      content.appendChild(imgTag);
 
-    if (imgs.length > 1) {
-      var nextBtn = document.createElement('button');
-      nextBtn.textContent = '次の写真';
-      nextBtn.style.marginTop = '8px';
-      nextBtn.onclick = function() {
-        index = (index + 1) % imgs.length;
-        imgTag.src = imgs[index];
-      };
-      content.appendChild(nextBtn);
+      if (imgs.length > 1) {
+        var nextBtn = document.createElement('button');
+        nextBtn.textContent = '次の写真';
+        nextBtn.style.marginTop = '8px';
+        nextBtn.onclick = function() {
+          index = (index + 1) % imgs.length;
+          imgTag.src = imgs[index];
+        };
+        content.appendChild(nextBtn);
+      }
+    } else {
+      var noImg = document.createElement('div');
+      noImg.textContent = '(写真なし)';
+      noImg.style.color = '#666';
+      content.appendChild(noImg);
     }
-  } else {
-    var noImg = document.createElement('div');
-    noImg.textContent = '(写真なし)';
-    noImg.style.color = '#666';
-    content.appendChild(noImg);
+
+    var p = document.createElement('p');
+    p.textContent = text || '';
+    p.style.marginTop = '10px';
+    content.appendChild(p);
+
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) modal.remove();
+    });
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
   }
 
-  var p = document.createElement('p');
-  p.textContent = text || '';
-  p.style.marginTop = '10px';
-  content.appendChild(p);
-
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) modal.remove();
-  });
-
-  modal.appendChild(content);
-  document.body.appendChild(modal);
-}
-
-
-
-  function renderResult(pref) {{
-    var images = infoData[pref].images || [];
-    var tags = infoData[pref].tags || [];
+  function renderResult(pref) {
+    var images = (infoData[pref] && infoData[pref].images) || [];
+    var tags = (infoData[pref] && infoData[pref].tags) || [];
     var imgHtml = "";
-    if (images.length > 0) {{
+    if (images.length > 0) {
       imgHtml = '<img src="' + images[0] + '" style="width:60px;height:auto;border-radius:6px;">';
-    }}
+    }
 
     return (
       '<div style="display:flex;align-items:center;gap:8px;">' +
@@ -245,36 +253,34 @@ search_js = f"""
         '</div>' +
       '</div>'
     );
-  }}
+  }
 
-  document.addEventListener("DOMContentLoaded", function() {{
+  document.addEventListener("DOMContentLoaded", function() {
     var input = document.getElementById("tagInput");
     var resultsDiv = document.getElementById("searchResults");
 
-    input.addEventListener("input", function() {{
+    input.addEventListener("input", function() {
       var query = input.value.trim();
       resultsDiv.innerHTML = "";
 
       if (!query.startsWith("#")) return;
 
-      Object.keys(infoData).forEach(function(pref) {{
+      Object.keys(infoData).forEach(function(pref) {
         var tags = infoData[pref].tags || [];
-        if (tags.indexOf(query) !== -1) {{
+        if (tags.indexOf(query) !== -1) {
           var div = document.createElement("div");
           div.className = "resultItem";
-
           div.innerHTML = renderResult(pref);
-
-          div.onclick = function() {{
-            openModal(pref); // クリックしたら表示
-          }};
+          div.onclick = function() { openModal(pref); };
           resultsDiv.appendChild(div);
-        }}
-      }});
-    }});
-  }});
+        }
+      });
+    });
+  });
 </script>
 """
+search_js = search_js.replace("__INFO_JSON__", info_json)
+
 
 # まず地図HTMLを保存
 m.save("index.html")
