@@ -1,6 +1,7 @@
 import folium
 import json
 import os
+from branca.element import Html
 
 with open("prefectures.geojson", encoding="utf-8") as f:
     geo_json = json.load(f)
@@ -127,19 +128,17 @@ for feature in geo_json["features"]:
         control=False,
     ).add_to(m)
 
-# ホバー用 Tooltip を作る（0番目の写真があれば表示）
-data = info_data.get(pref_name, {})
-images = data.get("images", []) if isinstance(data, dict) else []
+    data = info_data.get(pref_name, {})
+    images = data.get("images", []) if isinstance(data, dict) else []
 
-if images and os.path.exists(images[0]):
-    tooltip_html = f"""
-    <div>
-        <b>{pref_name}</b><br>
-        <img src="{images[0]}" width="120" style="border-radius:6px;">
-    </div>
-    """
-else:
-    tooltip_html = f"<b>{pref_name}</b>"
+    if images and os.path.exists(images[0]):
+        tip = Html(
+            f"<b>{pref_name}</b><br>"
+            f"<img src='{images[0]}' width='120' style='border-radius:6px;'>",
+            script=True
+        )
+    else:
+        tip = Html(f"<b>{pref_name}</b>", script=True)
 
-# Tooltipに直接HTMLを渡す
-gj.add_child(folium.Tooltip(tooltip_html, sticky=True, parse_html=True))
+    
+    gj.add_child(folium.Tooltip(tip, sticky=True))
