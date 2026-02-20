@@ -1,4 +1,5 @@
 var infoData = __INFO_JSON__;
+window.infoData = infoData;
 
   function openModal(pref) {
     var data = infoData[pref] || {};

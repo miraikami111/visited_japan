@@ -11,23 +11,68 @@ visited = ["北海道", "東京都", "京都府", "沖縄県","神奈川県","�
 
 info_data = {
     "北海道": {
-        "images": ["images/hokkaido/akw1.jpg"],
+        "images": ["images/hokkaido/hokkaido01.jpg",
+                   "images/hokkaido/hokkaido02.jpg",
+                   ],
         "text": "北海道：自然豊かで食べ物が美味しい地域。観光名所や温泉も豊富です。",
         "tags": ["#nature", "#food", "#cold"],
         },
+
     "沖縄県": {
-        "images": ["images/okinawa/oka.jpg"],
+        "images": [
+            "images/okinawa/okinawa01.jpg",
+             "images/okinawa/okinawa02.jpg",
+
+            ],
         "text": "沖縄県：美しい海と独自文化。琉球王国の歴史も楽しめます。",
         "tags": ["#sea", "#island", "#culture",],
         },
     
     "東京都": {
-        "images": ["images/tokyo/tokyo01.jpg"],
+        "images": [
+        "images/tokyo/tokyo01.jpg",
+            ],
         "text": "東京都：都会。",
-        "tags": ["#city", "#skytree", "#capital","nightview",],
+        "tags": ["#skytree", "#capitalcity","#nightview",],
+        },
+
+    "山梨県": {
+        "images": [
+        "images/yamanashi/yamanashi01.jpg",
+        "images/yamanashi/yamanashi02.jpg",
+            ],
+        "text": "山梨県：富士山が見える",
+        "tags": ["#mt.fuji","#毛無山","#花の都公園"],
+        },
+        
+    "静岡県":{
+        "images": [
+        "images/shizuoka/shizuoka01.jpg",
+        
+            ],
+        "text": "静岡県：富士山が見える",
+        "tags": ["#mt.fuji", "#白糸の滝","#朝霧高原",],
+        },
+
+    "熊本県":{
+        "images": [
+        "images/kumamoto/kumamoto01.jpg",
+        
+            ],
+        "text": "熊本県：阿蘇山",
+        "tags": [ "#阿蘇山","#くまもん",],
+        },
+    
+    "神奈川県":{
+        "images": [
+        "images/kanagawa/kanagawa01.jpg",
+        
+            ],
+        "text": "神奈川県：湘南",
+        "tags": [ "#座間ひまわり","箱根","くろたまご"],
         },
     }
-
+    
 m = folium.Map(
     location=[37.5, 137],
     zoom_start=5,
@@ -58,7 +103,7 @@ def popup_html(pref_name: str) -> str:
             img_html += f'<img src="{img}" width="180" style="margin-bottom:8px;"><br>'
 
     if not img_html:
-     img_html = "<div style='color:#666'>(写真なし)</div>"
+        img_html = "<div style='color:#666'>(写真なし)</div>"
 
     return f"""
     <div style="width:200px">
@@ -69,16 +114,8 @@ def popup_html(pref_name: str) -> str:
     """
 
 def tooltip_html(pref_name: str) -> str:
-    data = info_data.get(pref_name)
-    if not data:
-        return f"<b>{pref_name}</b>"
-
-    images = data.get("images", [])
-    img_html = ""
-    if images and os.path.exists(images[0]):
-        img_html = f'<br><img src="{images[0]}" width="150">'
-
-    return f"<b>{pref_name}</b>{img_html}"
+    # 県名だけ（ホバー写真は表示しない）
+    return f"<b>{pref_name}</b>"
 
 for feature in geo_json["features"]:
     pref_name = feature["properties"]["name"]
@@ -90,69 +127,19 @@ for feature in geo_json["features"]:
         control=False,
     ).add_to(m)
 
-    
+# ホバー用 Tooltip を作る（0番目の写真があれば表示）
+data = info_data.get(pref_name, {})
+images = data.get("images", []) if isinstance(data, dict) else []
 
-    # Hover tooltip（写真 + 県名）
-   
-    gj.add_child(folium.Tooltip(tooltip_html(pref_name), sticky=False))
-
-    # Dblclick modal（複数写真 + 詳細）
-    data = info_data.get(pref_name, {})
-    imgs = [p for p in data.get("images", []) if os.path.exists(p)]
-    text = data.get("text", "")
-
-    imgs_js = json.dumps(imgs, ensure_ascii=False)
-    text_js = json.dumps(text, ensure_ascii=False)
-    
-
-    name_js = json.dumps(pref_name, ensure_ascii=False)
-
-    js_code = f"""
-<script>
-(function() {{
-  var layer = {gj.get_name()};
-  var prefName = {name_js};
-
-  layer.on('click', function() {{
-    openModal(prefName);
-  }});
-}})();
-</script>
-"""
-    gj.add_child(folium.Element(js_code))
-
-    
-  # ---------- 検索UI & JS 読み込み ----------
-
-# UI読み込み
-with open("templates/search_ui.html", encoding="utf-8") as f:
-    search_ui = f.read()
-
-# JS読み込み
-info_json = json.dumps(info_data, ensure_ascii=False)
-
-with open("templates/search_js.js", encoding="utf-8") as f:
-    search_js = f.read()
-
-search_js = search_js.replace("__INFO_JSON__", info_json)
-search_js = "<script>\n" + search_js + "\n</script>\n"
-
-
-# ---------- HTML生成 ----------
-
-# まず地図HTMLを保存
-m.save("index.html")
-
-# 生成された index.html の </body> の直前に検索UIを差し込む
-with open("index.html", "r", encoding="utf-8") as f:
-    html = f.read()
-
-insert = search_ui + "\n" + search_js
-
-if "</body>" in html:
-    html = html.replace("</body>", insert + "\n</body>")
+if images and os.path.exists(images[0]):
+    tooltip_html = f"""
+    <div>
+        <b>{pref_name}</b><br>
+        <img src="{images[0]}" width="120" style="border-radius:6px;">
+    </div>
+    """
 else:
-    print("⚠️ </body> が見つかりませんでした")
+    tooltip_html = f"<b>{pref_name}</b>"
 
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(html)
+# Tooltipに直接HTMLを渡す
+gj.add_child(folium.Tooltip(tooltip_html, sticky=True, parse_html=True))
