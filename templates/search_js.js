@@ -112,27 +112,32 @@ var infoData = __INFO_JSON__;
     var resultsDiv = document.getElementById("searchResults");
     if (!input || !resultsDiv) return;
 
-    input.addEventListener("input", function() {
-      var query = (input.value || "").trim();
-      resultsDiv.innerHTML = "";
-      if (!query) return;
+input.addEventListener("input", function() {
+  var raw = (input.value || "").trim();
+  resultsDiv.innerHTML = "";
 
-      // # はあってもなくてもOK
-      query = query.replace(/^#/, "").toLowerCase();
+  if (!raw) return;
 
-      Object.keys(infoData || {}).forEach(function(pref) {
-        var tags = (infoData[pref] && infoData[pref].tags) || [];
-        var hit = tags.some(function(t) {
-          return String(t).toLowerCase().replace(/^#/, "").includes(query);
-        });
+  // # はあってもなくてもOK
+  var query = raw.replace(/^#/, "").toLowerCase().trim();
 
-        if (hit) {
-          var div = document.createElement("div");
-          div.className = "resultItem";
-          div.innerHTML = renderResult(pref);
-          div.onclick = function() { openModal(pref); };
-          resultsDiv.appendChild(div);
-        }
-      });
+  // ★ ここを追加（超重要）
+  if (!query) return;
+
+  Object.keys(infoData || {}).forEach(function(pref) {
+    var tags = (infoData[pref] && infoData[pref].tags) || [];
+
+    var hit = tags.some(function(t) {
+      return String(t).toLowerCase().replace(/^#/, "").includes(query);
+    });
+
+    if (hit) {
+      var div = document.createElement("div");
+      div.className = "resultItem";
+      div.innerHTML = renderResult(pref);
+      div.onclick = function() { openModal(pref); };
+      resultsDiv.appendChild(div);
+      }
     });
   });
+});

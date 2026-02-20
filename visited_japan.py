@@ -5,19 +5,26 @@ import os
 with open("prefectures.geojson", encoding="utf-8") as f:
     geo_json = json.load(f)
 
-visited = ["北海道", "東京都", "京都府", "沖縄県"]
+visited = ["北海道", "東京都", "京都府", "沖縄県","神奈川県","長野県","福岡県","熊本県",
+           "山口県","静岡県","大分県","広島県","鳥取県","栃木県","大阪府","兵庫県","奈良県",
+           ]
 
 info_data = {
     "北海道": {
-        "images": ["images/akw1.jpg"],
+        "images": ["images/hokkaido/akw1.jpg"],
         "text": "北海道：自然豊かで食べ物が美味しい地域。観光名所や温泉も豊富です。",
         "tags": ["#nature", "#food", "#cold"],
         },
     "沖縄県": {
-        "images": ["images/oka.jpg"],
+        "images": ["images/okinawa/oka.jpg"],
         "text": "沖縄県：美しい海と独自文化。琉球王国の歴史も楽しめます。",
-        "tags": ["#sea", "#island", "#culture"],
-
+        "tags": ["#sea", "#island", "#culture",],
+        },
+    
+    "東京都": {
+        "images": ["images/tokyo/tokyo01.jpg"],
+        "text": "東京都：都会。",
+        "tags": ["#city", "#skytree", "#capital","nightview",],
         },
     }
 
@@ -45,9 +52,13 @@ def popup_html(pref_name: str) -> str:
     images = data.get("images", [])
     text = data.get("text", "")
 
-    img_html = "<div style='color:#666'>(写真なし)</div>"
-    if images and os.path.exists(images[0]):
-        img_html = f'<img src="{images[0]}" width="180"><br>'
+    img_html = ""
+    for img in images:
+        if os.path.exists(img):
+            img_html += f'<img src="{img}" width="180" style="margin-bottom:8px;"><br>'
+
+    if not img_html:
+     img_html = "<div style='color:#666'>(写真なし)</div>"
 
     return f"""
     <div style="width:200px">
