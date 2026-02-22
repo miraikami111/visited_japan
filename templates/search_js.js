@@ -236,9 +236,9 @@ document.addEventListener("DOMContentLoaded", function () {
     Object.keys(infoData || {}).forEach(function (pref) {
       var tags = (infoData[pref] && infoData[pref].tags) || [];
 
-      var hit = tags.some(function (t) {
-        return String(t).toLowerCase().replace(/^#/, "").includes(query);
-      });
+    var hit = tags.some(function(t) {
+      return String(t).toLowerCase().replace(/^#/, "") === query;
+    });
 
       if (hit) {
         var div = document.createElement("div");
