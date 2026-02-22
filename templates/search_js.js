@@ -15,7 +15,7 @@ function openModal(pref) {
   var old = document.getElementById("modal");
   if (old) old.remove();
 
-  var modal = document.createElement("div"); // ←これでOK
+  var modal = document.createElement("div");
   modal.id = "modal";
   modal.style.position = "fixed";
   modal.style.top = "0";
@@ -124,9 +124,30 @@ function tooltipHtml(pref) {
   );
 }
 
+// =============================
+// 検索結果1件のHTML
+// =============================
+function renderResult(pref) {
+  var images = (infoData[pref] && infoData[pref].images) || [];
+  var tags = (infoData[pref] && infoData[pref].tags) || [];
+  var imgHtml = "";
+  if (images.length > 0) {
+    imgHtml = '<img src="' + images[0] + '" style="width:60px;height:auto;border-radius:6px;">';
+  }
+  return (
+    '<div style="display:flex;align-items:center;gap:8px;">' +
+      imgHtml +
+      '<div>' +
+        '<div style="font-weight:bold;">' + pref + '</div>' +
+        '<div style="font-size:12px;color:#666;">' + tags.join(' ') + '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
 document.addEventListener("DOMContentLoaded", function () {
 
-  // ===== 自前ホバープレビュー（Leaflet tooltipに頼らない）=====
+  // ===== 自前ホバープレビュー（これが抜けてた）=====
   function ensureHoverBox() {
     var box = document.getElementById("hoverPreview");
     if (box) return box;
@@ -146,56 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(box);
     return box;
   }
-// ===== ② #タグ検索（search UI） =====
-var input = document.getElementById("tagInput");
-var resultsDiv = document.getElementById("searchResults");
-if (!input || !resultsDiv) {
-  console.log("search UI not found");
-  return;
-}
-
-function renderResult(pref) {
-  var images = (infoData[pref] && infoData[pref].images) || [];
-  var tags = (infoData[pref] && infoData[pref].tags) || [];
-  var imgHtml = "";
-  if (images.length > 0) {
-    imgHtml = '<img src="' + images[0] + '" style="width:60px;height:auto;border-radius:6px;">';
-  }
-  return (
-    '<div style="display:flex;align-items:center;gap:8px;">' +
-      imgHtml +
-      '<div>' +
-        '<div style="font-weight:bold;">' + pref + '</div>' +
-        '<div style="font-size:12px;color:#666;">' + tags.join(' ') + '</div>' +
-      '</div>' +
-    '</div>'
-  );
-}
-
-input.addEventListener("input", function () {
-  var raw = (input.value || "").trim();
-  resultsDiv.innerHTML = "";
-  if (!raw) return;
-
-  // # はあってもなくてもOK
-  var query = raw.replace(/^#/, "").toLowerCase().trim();
-  if (!query) return;
-
-  Object.keys(infoData || {}).forEach(function (pref) {
-    var tags = (infoData[pref] && infoData[pref].tags) || [];
-    var hit = tags.some(function (t) {
-      return String(t).toLowerCase().replace(/^#/, "").includes(query);
-    });
-
-    if (hit) {
-      var div = document.createElement("div");
-      div.className = "resultItem";
-      div.innerHTML = renderResult(pref);
-      div.onclick = function () { openModal(pref); };
-      resultsDiv.appendChild(div);
-    }
-  });
-});
 
   var hoverBox = ensureHoverBox();
 
@@ -203,50 +174,79 @@ input.addEventListener("input", function () {
     hoverBox.innerHTML = html;
     hoverBox.style.display = "block";
     hoverBox.style.left = (x + 14) + "px";
-    hoverBox.style.top = (y + 14) + "px";
+    hoverBox.style.top  = (y + 14) + "px";
   }
 
   function hideHoverBox() {
     hoverBox.style.display = "none";
   }
 
-  // geoLayer を1回だけ取得
-  var geoLayer = null;
+  // ===== geo_json_* を全部集めて hover を付ける =====
+  var layers = [];
   for (var k in window) {
     if (k.startsWith("geo_json_") && window[k] && typeof window[k].eachLayer === "function") {
-      geoLayer = window[k];
-      break;
+      layers.push(window[k]);
     }
   }
+  console.log("geo_json layers:", layers.length);
 
-  if (!geoLayer) {
-    console.log("GeoJson layer not found");
+  layers.forEach(function (geoLayer) {
+    geoLayer.eachLayer(function (layer) {
+      var pref = layer.feature && layer.feature.properties && layer.feature.properties.name;
+      if (!pref) return;
+
+      layer.on("mouseover", function (e) {
+        var ev = e.originalEvent;
+        if (!ev) return;
+        showHoverBox(tooltipHtml(pref), ev.clientX, ev.clientY);
+      });
+
+      layer.on("mousemove", function (e) {
+        var ev = e.originalEvent;
+        if (!ev) return;
+        showHoverBox(tooltipHtml(pref), ev.clientX, ev.clientY);
+      });
+
+      layer.on("mouseout", function () {
+        hideHoverBox();
+      });
+
+      layer.on("click", function () {
+        openModal(pref);
+      });
+    });
+  });
+
+  // ===== #タグ検索 =====
+  var input = document.getElementById("tagInput");
+  var resultsDiv = document.getElementById("searchResults");
+  if (!input || !resultsDiv) {
+    console.log("search UI not found");
     return;
   }
-  console.log("GeoJson layer found");
 
-  geoLayer.eachLayer(function (layer) {
-    var pref = layer.feature && layer.feature.properties && layer.feature.properties.name;
-    if (!pref) return;
+  input.addEventListener("input", function () {
+    var raw = (input.value || "").trim();
+    resultsDiv.innerHTML = "";
+    if (!raw) return;
 
-    layer.on("mouseover", function (e) {
-      var ev = e.originalEvent;
-      if (!ev) return;
-      showHoverBox(tooltipHtml(pref), ev.clientX, ev.clientY);
-    });
+    var query = raw.replace(/^#/, "").toLowerCase().trim();
+    if (!query) return;
 
-    layer.on("mousemove", function (e) {
-      var ev = e.originalEvent;
-      if (!ev) return;
-      showHoverBox(tooltipHtml(pref), ev.clientX, ev.clientY);
-    });
+    Object.keys(infoData || {}).forEach(function (pref) {
+      var tags = (infoData[pref] && infoData[pref].tags) || [];
 
-    layer.on("mouseout", function () {
-      hideHoverBox();
-    });
+      var hit = tags.some(function (t) {
+        return String(t).toLowerCase().replace(/^#/, "").includes(query);
+      });
 
-    layer.on("click", function () {
-      openModal(pref);
+      if (hit) {
+        var div = document.createElement("div");
+        div.className = "resultItem";
+        div.innerHTML = renderResult(pref);
+        div.onclick = function () { openModal(pref); };
+        resultsDiv.appendChild(div);
+      }
     });
   });
 
