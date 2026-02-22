@@ -10,6 +10,7 @@ with open("prefectures.geojson", encoding="utf-8") as f:
 
 visited = ["北海道", "東京都", "京都府", "沖縄県","神奈川県","長野県","福岡県","熊本県",
            "山口県","静岡県","大分県","広島県","鳥取県","栃木県","大阪府","兵庫県","奈良県",
+           "宮城県","岐阜県","愛知県","千葉県","山梨県","群馬県","茨城県",
            ]
 
 info_data = {
@@ -83,6 +84,36 @@ m = folium.Map(
     control_scale=True,
 )
 
+# ===== カウント =====
+visited_count = len(visited)
+total_pref = len(geo_json["features"])
+percent = round((visited_count / total_pref) * 100, 1)
+
+counter_html = f"""
+<div style="
+position: fixed;
+bottom: 40px;
+right: 20px;
+background: white;
+padding: 8px 14px;
+border-radius: 10px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+font-weight: bold;
+z-index: 9999;
+font-size: 16px;
+background: linear-gradient(135deg, #ffffff, #e8f6ff);
+">
+Visited: {visited_count}/{total_pref} ({percent}%)
+</div>
+"""
+
+m.get_root().html.add_child(folium.Element(counter_html))
+# ===== ここまで =====
+
+
+
+
+
 def style_function(feature):
     name = feature["properties"]["name"]
     if name in visited:
@@ -131,7 +162,7 @@ for feature in geo_json["features"]:
     if images and os.path.exists(images[0]):
         img_html = f"<img src='{images[0]}' width='150' style='border-radius:6px; margin-bottom:6px;'>"
     else:
-        img_html = "<div style='color:#666'>(写真なし)</div>"
+        img_html = "<div style='color:#666'>(情報なし)</div>"
 
 
     tooltip_html_str = f"""
