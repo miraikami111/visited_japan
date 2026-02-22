@@ -2,6 +2,8 @@ import folium
 import json
 import os
 from branca.element import Html
+from folium.features import GeoJsonTooltip
+
 
 with open("prefectures.geojson", encoding="utf-8") as f:
     geo_json = json.load(f)
@@ -121,24 +123,65 @@ def tooltip_html(pref_name: str) -> str:
 for feature in geo_json["features"]:
     pref_name = feature["properties"]["name"]
 
+    data = info_data.get(pref_name, {})
+    images = data.get("images", [])
+    text = data.get("text", "")
+
+    # 画像HTML
+    if images and os.path.exists(images[0]):
+        img_html = f"<img src='{images[0]}' width='150' style='border-radius:6px; margin-bottom:6px;'>"
+    else:
+        img_html = "<div style='color:#666'>(写真なし)</div>"
+
+
+    tooltip_html_str = f"""
+        <div style="width:180px;">
+            <b>{pref_name}</b><br>
+            {img_html}<br>
+            <span style="font-size:12px;">{text}</span>
+        </div>
+    """
+
     gj = folium.GeoJson(
         feature,
         style_function=style_function,
         highlight_function=highlight_function,
         control=False,
+        tooltip=GeoJsonTooltip(
+            fields=[],
+            aliases=[],
+            labels=False,
+            sticky=True,
+            style=("background-color: white; border: 1px solid black; border-radius: 6px; padding: 6px;"),
+            html=tooltip_html_str
+        )
     ).add_to(m)
 
-    data = info_data.get(pref_name, {})
-    images = data.get("images", []) if isinstance(data, dict) else []
+# ===== ここから追加（for ループの外！）=====
 
-    if images and os.path.exists(images[0]):
-        tip = Html(
-            f"<b>{pref_name}</b><br>"
-            f"<img src='{images[0]}' width='120' style='border-radius:6px;'>",
-            script=True
-        )
-    else:
-        tip = Html(f"<b>{pref_name}</b>", script=True)
+# 地図HTMLを書き出す
+m.save("index.html")
 
-    
-    gj.add_child(folium.Tooltip(tip, sticky=True))
+# templates から UI/JS を読み込んで差し込む
+with open("templates/search_ui.html", encoding="utf-8") as f:
+    search_ui = f.read()
+
+with open("templates/search_js.js", encoding="utf-8") as f:
+    search_js = f.read()
+
+info_json = json.dumps(info_data, ensure_ascii=False)
+search_js = search_js.replace("__INFO_JSON__", info_json)
+
+insert = search_ui + "\n<script>\n" + search_js + "\n</script>\n"
+
+with open("index.html", "r", encoding="utf-8") as f:
+    html = f.read()
+
+html = html.replace("</body>", insert + "\n</body>")
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html)
+
+print("Injected templates/search_js.js into index.html")
+
+# ===== 追加ここまで =====

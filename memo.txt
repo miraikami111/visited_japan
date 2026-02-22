@@ -71,3 +71,24 @@ visited_japan/
 ├── templates/
 │   ├── search_ui.html
 │   ├── search_js.js
+
+pwd
+
+こうなっていればOK👇
+
+.../デスクトップ/visited_map
+
+または
+
+.../デスクトップ/visited_japan
+✅ ② ローカルサーバーで起動（重要！）
+
+⚠ index.html をダブルクリックしないこと！
+
+画像やJSが動かなくなる原因になる。
+
+代わりにこれ👇
+
+python -m http.server 8000
+✅ ③ ブラウザで開く
+http://localhost:8000/
