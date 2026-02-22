@@ -146,6 +146,56 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(box);
     return box;
   }
+// ===== ② #タグ検索（search UI） =====
+var input = document.getElementById("tagInput");
+var resultsDiv = document.getElementById("searchResults");
+if (!input || !resultsDiv) {
+  console.log("search UI not found");
+  return;
+}
+
+function renderResult(pref) {
+  var images = (infoData[pref] && infoData[pref].images) || [];
+  var tags = (infoData[pref] && infoData[pref].tags) || [];
+  var imgHtml = "";
+  if (images.length > 0) {
+    imgHtml = '<img src="' + images[0] + '" style="width:60px;height:auto;border-radius:6px;">';
+  }
+  return (
+    '<div style="display:flex;align-items:center;gap:8px;">' +
+      imgHtml +
+      '<div>' +
+        '<div style="font-weight:bold;">' + pref + '</div>' +
+        '<div style="font-size:12px;color:#666;">' + tags.join(' ') + '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+input.addEventListener("input", function () {
+  var raw = (input.value || "").trim();
+  resultsDiv.innerHTML = "";
+  if (!raw) return;
+
+  // # はあってもなくてもOK
+  var query = raw.replace(/^#/, "").toLowerCase().trim();
+  if (!query) return;
+
+  Object.keys(infoData || {}).forEach(function (pref) {
+    var tags = (infoData[pref] && infoData[pref].tags) || [];
+    var hit = tags.some(function (t) {
+      return String(t).toLowerCase().replace(/^#/, "").includes(query);
+    });
+
+    if (hit) {
+      var div = document.createElement("div");
+      div.className = "resultItem";
+      div.innerHTML = renderResult(pref);
+      div.onclick = function () { openModal(pref); };
+      resultsDiv.appendChild(div);
+    }
+  });
+});
 
   var hoverBox = ensureHoverBox();
 
