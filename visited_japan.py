@@ -18,9 +18,16 @@ info_data = {
         "images": ["images/hokkaido/hokkaido01.jpg",
                    "images/hokkaido/hokkaido02.jpg",
                    ],
-        "text": "北海道：自然豊かで食べ物が美味しい地域。観光名所や温泉も豊富です。",
-        "tags": ["#nature", "#food", "#cold"],
+        "text": "北海道：海鮮(イクラ、ウニ、カニ)・ジンギスカン・スープカレー・味噌ラーメン",
+        "tags": ["#nature", "#旭岳", "#スノーシュー"],
         },
+    "宮城県": {
+        "images": ["images/miyagi/miyagi01.jpg",
+                   ],
+        "text": "牛タン・笹かまぼこ",
+        "tags": ["#きつね村","スキー"],
+        },
+
 
     "沖縄県": {
         "images": [
@@ -28,7 +35,7 @@ info_data = {
              "images/okinawa/okinawa02.jpg",
 
             ],
-        "text": "沖縄県：美しい海と独自文化。琉球王国の歴史も楽しめます。",
+        "text": "沖縄県：沖縄そば・海ブドウ・サーターアンダギー・ゴーヤチャンプル・",
         "tags": ["#sea", "#island", "#culture",],
         },
     
@@ -36,7 +43,7 @@ info_data = {
         "images": [
         "images/tokyo/tokyo01.jpg",
             ],
-        "text": "東京都：都会。",
+        "text": "東京都：もんじゃ焼き・寿司",
         "tags": ["#skytree", "#capitalcity","#nightview",],
         },
 
@@ -45,8 +52,8 @@ info_data = {
         "images/yamanashi/yamanashi01.jpg",
         "images/yamanashi/yamanashi02.jpg",
             ],
-        "text": "山梨県：富士山が見える",
-        "tags": ["#mt.fuji","#毛無山","#花の都公園"],
+        "text": "山梨県：ほうとう",
+        "tags": ["#mt.fuji","#毛無山","#花の都公園",],
         },
         
     "静岡県":{
@@ -54,8 +61,8 @@ info_data = {
         "images/shizuoka/shizuoka01.jpg",
         
             ],
-        "text": "静岡県：富士山が見える",
-        "tags": ["#mt.fuji", "#白糸の滝","#朝霧高原",],
+        "text": "静岡県：うなぎ・さわやかハンバーグ・しらす",
+        "tags": ["#mt.fuji","#朝霧高原",],
         },
 
     "熊本県":{
@@ -63,7 +70,7 @@ info_data = {
         "images/kumamoto/kumamoto01.jpg",
         
             ],
-        "text": "熊本県：阿蘇山",
+        "text": "熊本県：赤肉",
         "tags": [ "#阿蘇山","#くまもん",],
         },
     
@@ -73,7 +80,25 @@ info_data = {
         
             ],
         "text": "神奈川県：湘南",
-        "tags": [ "#座間ひまわり","箱根","くろたまご"],
+        "tags": [ "#座間ひまわり","mt.fuji"],
+    
+        },
+     "長野県":{
+        "images": [
+        # "images/kanagawa/kanagawa01.jpg",
+        
+            ],
+        "text": "長野県：信州そば",
+        "tags": [ "#八ヶ岳","#白馬村"],
+        },
+
+    "大阪府":{
+        "images": [
+        # "images/osaka/osaka01.jpg",
+        
+            ],
+        "text": "大阪府：たこ焼き・お好み焼き",
+        "tags": [ "#大阪城",],
         },
     }
     
