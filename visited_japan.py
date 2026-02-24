@@ -23,12 +23,14 @@ info_data = {
         "tags": ["#nature", "#旭岳", "#狼犬の森"],
         },
     "東京都": {
-        "images": ["images/tokyo/tokyo01.jpg"],
+        "images": ["images/tokyo/tokyo01.jpg",
+                   "images/tokyo/tokyo02.jpg",
+                   ],
         "text": "東京都：もんじゃ焼き・寿司",
         "tags": ["#skytree"],
     },
     "京都府": {
-        "images": ["images/kyoto/kyoto01.jpg"],
+        # "images": ["images/kyoto/kyoto01.jpg"],
         "text": "京都府：抹茶・湯豆腐・八つ橋",
         "tags": ["#清水寺"],
     },
@@ -49,12 +51,16 @@ info_data = {
         "tags": ["#座間ひまわり","#mt.fuji","#大観山","#大涌谷"],
     },
     "長野県": {
-        # "images": ["images/nagano/nagano01.jpg"],
+        "images": ["images/nagano/nagano01.jpg",
+                   "images/nagano/nagano02.jpg"],
+
         "text": "長野県：信州そば",
-        "tags": ["#白馬"],
+        "tags": ["#白馬","#八方尾根","#地獄谷温泉"],
     },
     "福岡県": {
-        # "images": ["images/fukuoka/fukuoka01.jpg"],
+        "images": ["images/fukuoka/fukuoka01.jpg",
+                   "images/fukuoka/fukuoka02.jpg",
+                   ],
         "text": "福岡県：博多ラーメン・もつ鍋",
         "tags": ["#いちご狩り","#北九州","#平尾台"],
     },
@@ -75,7 +81,8 @@ info_data = {
         "tags": ["#角島","#秋吉台","#唐戸市場"],
     },
     "静岡県": {
-        "images": ["images/shizuoka/shizuoka01.jpg"],
+        "images": ["images/shizuoka/shizuoka01.jpg",
+                   "images/shizuoka/shizuoka02.jpg"],
         "text": "静岡県：うなぎ・しらす",
         "tags": ["#富士山","#mt.fuji"],
     },
@@ -96,9 +103,10 @@ info_data = {
         "tags": ["#宮島","#厳島神社","#deers"],
     },
     "鳥取県": {
-        # "images": ["images/tottori/tottori01.jpg"],
+        "images": ["images/tottori/tottori01.jpg",
+                   ],
         "text": "鳥取県：砂丘・梨",
-        "tags": ["#鳥取砂丘"],
+        "tags": ["#水木しげるロード","#境港"],
     },
     "栃木県": {
         "images": ["images/tochigi/tochigi01.jpg"],
@@ -128,7 +136,7 @@ info_data = {
         "tags": ["#きつね村","#牛タン",],
     },
     "岐阜県": {
-        # "images": ["images/gifu/gifu01.jpg"],
+        "images": ["images/gifu/gifu01.jpg"],
         "text": "岐阜県：飛騨牛",
         "tags": ["#白川郷"],
     },
