@@ -17,9 +17,10 @@ info_data = {
     "北海道": {
         "images": ["images/hokkaido/hokkaido01.jpg",
                    "images/hokkaido/hokkaido02.jpg",
+                   "images/hokkaido/hokkaido03.jpg",
                    ],
         "text": "北海道：海鮮(イクラ、ウニ、カニ)・ジンギスカン・スープカレー・味噌ラーメン",
-        "tags": ["#nature", "#旭岳", "#スノーシュー"],
+        "tags": ["#nature", "#旭岳", "#狼犬の森"],
         },
     "東京都": {
         "images": ["images/tokyo/tokyo01.jpg"],
@@ -36,12 +37,16 @@ info_data = {
                    "images/okinawa/okinawa02.jpg",
                    ],
         "text": "沖縄県：沖縄そば・海ぶどう",
-        "tags": ["#sea"],
+        "tags": ["#sea","#恩納村","#scuvadiving",],
     },
     "神奈川県": {
-        "images": ["images/kanagawa/kanagawa01.jpg"],
+        "images": ["images/kanagawa/kanagawa01.jpg",
+                   "images/kanagawa/kanagawa02.jpg",
+                   "images/kanagawa/kanagawa03.jpg",
+                   
+                   ],
         "text": "神奈川県：湘南・横浜中華街",
-        "tags": ["#座間ひまわり","#mt.fuji",],
+        "tags": ["#座間ひまわり","#mt.fuji","#大観山","#大涌谷"],
     },
     "長野県": {
         # "images": ["images/nagano/nagano01.jpg"],
@@ -51,17 +56,23 @@ info_data = {
     "福岡県": {
         # "images": ["images/fukuoka/fukuoka01.jpg"],
         "text": "福岡県：博多ラーメン・もつ鍋",
-        "tags": ["#太宰府"],
+        "tags": ["#いちご狩り","#北九州","#平尾台"],
     },
     "熊本県": {
-        "images": ["images/kumamoto/kumamoto01.jpg"],
+        "images": ["images/kumamoto/kumamoto01.jpg",
+                   "images/kumamoto/kumamoto02.jpg"
+                   "images/kumamoto/kumamoto03.jpg"
+                   ],
         "text": "熊本県：馬刺し",
-        "tags": ["#阿蘇山","#くまもん",],
+        "tags": ["#mt.aso","#くまもん","#mt.kujyu"],
     },
     "山口県": {
-        # "images": ["images/yamaguchi/yamaguchi01.jpg"],
+        "images": ["images/yamaguchi/yamaguchi01.jpg",
+                   "images/yamaguchi/yamaguchi02.jpg",
+                   "images/yamaguchi/yamaguchi03.jpg",               
+                   ],
         "text": "山口県：ふぐ",
-        "tags": ["#角島"],
+        "tags": ["#角島","#秋吉台","#唐戸市場"],
     },
     "静岡県": {
         "images": ["images/shizuoka/shizuoka01.jpg"],
@@ -69,14 +80,20 @@ info_data = {
         "tags": ["#富士山","#mt.fuji"],
     },
     "大分県": {
-        # "images": ["images/oita/oita01.jpg"],
+        "images": ["images/oita/oita01.jpg",
+                   "images/oita/oita02.jpg",
+                   "images/oita/oita03.jpg",      
+                 ],
         "text": "大分県：とり天・温泉",
-        "tags": ["#別府"],
+        "tags": ["#別府温泉","#鶴見岳"],
     },
     "広島県": {
-        # "images": ["images/hiroshima/hiroshima01.jpg"],
+        "images": ["images/hiroshima/hiroshima01.jpg",
+                   "images/hiroshima/hiroshima02.jpg"
+                   "images/hiroshima/hiroshima03.jpg"
+                   ],
         "text": "広島県：広島焼き・牡蠣",
-        "tags": ["#宮島"],
+        "tags": ["#宮島","#厳島神社","#deers"],
     },
     "鳥取県": {
         # "images": ["images/tottori/tottori01.jpg"],
@@ -84,12 +101,12 @@ info_data = {
         "tags": ["#鳥取砂丘"],
     },
     "栃木県": {
-        # "images": ["images/tochigi/tochigi01.jpg"],
+        "images": ["images/tochigi/tochigi01.jpg"],
         "text": "栃木県：いちご",
-        "tags": ["#日光東照宮"],
+        "tags": ["#mt.natshdake"],
     },
     "大阪府": {
-        # "images": ["images/osaka/osaka01.jpg"],
+        "images": ["images/osaka/osaka01.jpg"],
         "text": "大阪府：たこ焼き・お好み焼き",
         "tags": ["#大阪城"],
     },
@@ -104,9 +121,11 @@ info_data = {
         "tags": ["#東大寺"],
     },
     "宮城県": {
-        "images": ["images/miyagi/miyagi01.jpg"],
+        "images": ["images/miyagi/miyagi01.jpg",
+                   "images/miyagi/miyagi02.jpg"
+                   ],
         "text": "宮城県：牛タン",
-        "tags": ["#松島"],
+        "tags": ["#きつね村","#牛タン",],
     },
     "岐阜県": {
         # "images": ["images/gifu/gifu01.jpg"],
@@ -136,9 +155,11 @@ info_data = {
         "tags": ["#草津温泉"],
     },
     "茨城県": {
-        # "images": ["images/ibaraki/ibaraki01.jpg"],
-        "text": "茨城県：納豆",
-        "tags": ["#ひたち海浜公園"],
+        "images": ["images/ibaraki/ibaraki01.jpg",
+                   "images/ibaraki/ibaraki02.jpg",
+                   ],
+        "text": "茨城県：筑波山/877m",
+        "tags": ["#mt.tukuba",],
     },
 }
     

@@ -264,8 +264,8 @@ input.addEventListener("input", function () {
 
     var hit = false;
 
-    // 🔥 #から始まり、3文字以上
-    if (raw.startsWith("#") && query.length >= 3) {
+    // 🔥 #から始まり、2文字以上
+    if (raw.startsWith("#") && query.length >= 2) {
       hit = tags.some(function(t) {
         var tag = String(t).toLowerCase().replace(/^#/, "");
         return tag.includes(query);
