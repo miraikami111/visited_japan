@@ -21,86 +21,123 @@ info_data = {
         "text": "北海道：海鮮(イクラ、ウニ、カニ)・ジンギスカン・スープカレー・味噌ラーメン",
         "tags": ["#nature", "#旭岳", "#スノーシュー"],
         },
-    "宮城県": {
-        "images": ["images/miyagi/miyagi01.jpg",
-                   ],
-        "text": "牛タン・笹かまぼこ",
-        "tags": ["#きつね村","スキー"],
-        },
-
-
-    "沖縄県": {
-        "images": [
-            "images/okinawa/okinawa01.jpg",
-             "images/okinawa/okinawa02.jpg",
-
-            ],
-        "text": "沖縄県：沖縄そば・海ブドウ・サーターアンダギー・ゴーヤチャンプル・",
-        "tags": ["#sea", "#island", "#culture",],
-        },
-    
     "東京都": {
-        "images": [
-        "images/tokyo/tokyo01.jpg",
-            ],
+        "images": ["images/tokyo/tokyo01.jpg"],
         "text": "東京都：もんじゃ焼き・寿司",
-        "tags": ["#skytree", "#capitalcity","#nightview",],
-        },
-
-    "山梨県": {
-        "images": [
-        "images/yamanashi/yamanashi01.jpg",
-        "images/yamanashi/yamanashi02.jpg",
-            ],
-        "text": "山梨県：ほうとう",
-        "tags": ["#mt.fuji","#毛無山","#花の都公園",],
-        },
-        
-    "静岡県":{
-        "images": [
-        "images/shizuoka/shizuoka01.jpg",
-        
-            ],
-        "text": "静岡県：うなぎ・さわやかハンバーグ・しらす",
-        "tags": ["#mt.fuji","#朝霧高原",],
-        },
-
-    "熊本県":{
-        "images": [
-        "images/kumamoto/kumamoto01.jpg",
-        
-            ],
-        "text": "熊本県：赤肉",
-        "tags": [ "#阿蘇山","#くまもん",],
-        },
-    
-    "神奈川県":{
-        "images": [
-        "images/kanagawa/kanagawa01.jpg",
-        
-            ],
-        "text": "神奈川県：湘南",
-        "tags": [ "#座間ひまわり","mt.fuji"],
-    
-        },
-     "長野県":{
-        "images": [
-        # "images/kanagawa/kanagawa01.jpg",
-        
-            ],
+        "tags": ["#skytree"],
+    },
+    "京都府": {
+        "images": ["images/kyoto/kyoto01.jpg"],
+        "text": "京都府：抹茶・湯豆腐・八つ橋",
+        "tags": ["#清水寺"],
+    },
+    "沖縄県": {
+        "images": ["images/okinawa/okinawa01.jpg"],
+        "text": "沖縄県：沖縄そば・海ぶどう",
+        "tags": ["#sea"],
+    },
+    "神奈川県": {
+        "images": ["images/kanagawa/kanagawa01.jpg"],
+        "text": "神奈川県：湘南・横浜中華街",
+        "tags": ["#みなとみらい"],
+    },
+    "長野県": {
+        "images": ["images/nagano/nagano01.jpg"],
         "text": "長野県：信州そば",
-        "tags": [ "#八ヶ岳","#白馬村"],
-        },
-
-    "大阪府":{
-        "images": [
-        # "images/osaka/osaka01.jpg",
-        
-            ],
+        "tags": ["#白馬"],
+    },
+    "福岡県": {
+        "images": ["images/fukuoka/fukuoka01.jpg"],
+        "text": "福岡県：博多ラーメン・もつ鍋",
+        "tags": ["#太宰府"],
+    },
+    "熊本県": {
+        "images": ["images/kumamoto/kumamoto01.jpg"],
+        "text": "熊本県：馬刺し",
+        "tags": ["#阿蘇山"],
+    },
+    "山口県": {
+        "images": ["images/yamaguchi/yamaguchi01.jpg"],
+        "text": "山口県：ふぐ",
+        "tags": ["#角島"],
+    },
+    "静岡県": {
+        "images": ["images/shizuoka/shizuoka01.jpg"],
+        "text": "静岡県：うなぎ・しらす",
+        "tags": ["#富士山"],
+    },
+    "大分県": {
+        "images": ["images/oita/oita01.jpg"],
+        "text": "大分県：とり天・温泉",
+        "tags": ["#別府"],
+    },
+    "広島県": {
+        "images": ["images/hiroshima/hiroshima01.jpg"],
+        "text": "広島県：広島焼き・牡蠣",
+        "tags": ["#宮島"],
+    },
+    "鳥取県": {
+        "images": ["images/tottori/tottori01.jpg"],
+        "text": "鳥取県：砂丘・梨",
+        "tags": ["#鳥取砂丘"],
+    },
+    "栃木県": {
+        "images": ["images/tochigi/tochigi01.jpg"],
+        "text": "栃木県：いちご",
+        "tags": ["#日光東照宮"],
+    },
+    "大阪府": {
+        "images": ["images/osaka/osaka01.jpg"],
         "text": "大阪府：たこ焼き・お好み焼き",
-        "tags": [ "#大阪城",],
-        },
-    }
+        "tags": ["#大阪城"],
+    },
+    "兵庫県": {
+        "images": ["images/hyogo/hyogo01.jpg"],
+        "text": "兵庫県：神戸牛",
+        "tags": ["#姫路城"],
+    },
+    "奈良県": {
+        "images": ["images/nara/nara01.jpg"],
+        "text": "奈良県：柿の葉寿司",
+        "tags": ["#東大寺"],
+    },
+    "宮城県": {
+        "images": ["images/miyagi/miyagi01.jpg"],
+        "text": "宮城県：牛タン",
+        "tags": ["#松島"],
+    },
+    "岐阜県": {
+        "images": ["images/gifu/gifu01.jpg"],
+        "text": "岐阜県：飛騨牛",
+        "tags": ["#白川郷"],
+    },
+    "愛知県": {
+        "images": ["images/aichi/aichi01.jpg"],
+        "text": "愛知県：味噌カツ",
+        "tags": ["#名古屋城"],
+    },
+    "千葉県": {
+        "images": ["images/chiba/chiba01.jpg"],
+        "text": "千葉県：落花生",
+        "tags": ["#ディズニー"],
+    },
+    "山梨県": {
+        "images": ["images/yamanashi/yamanashi01.jpg"],
+        "text": "山梨県：ほうとう",
+        "tags": ["#富士山"],
+    },
+    "群馬県": {
+        "images": ["images/gunma/gunma01.jpg"],
+        "text": "群馬県：焼きまんじゅう",
+        "tags": ["#草津温泉"],
+    },
+    "茨城県": {
+        "images": ["images/ibaraki/ibaraki01.jpg"],
+        "text": "茨城県：納豆",
+        "tags": ["#ひたち海浜公園"],
+    },
+}
+    
     
 m = folium.Map(
     location=[37.5, 137],
@@ -240,4 +277,3 @@ with open("index.html", "w", encoding="utf-8") as f:
 
 print("Injected templates/search_js.js into index.html")
 
-# ===== 追加ここまで =====

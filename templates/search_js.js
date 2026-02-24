@@ -147,7 +147,7 @@ function renderResult(pref) {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-  // ===== 自前ホバープレビュー（これが抜けてた）=====
+  // ===== 自前ホバープレビュー=====
   function ensureHoverBox() {
     var box = document.getElementById("hoverPreview");
     if (box) return box;
@@ -224,30 +224,46 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("search UI not found");
     return;
   }
+// リアルタイムハイライト
+function highlight(text, query) {
+  var lower = text.toLowerCase();
+  var index = lower.indexOf(query);
+  if (index === -1) return text;
 
-  input.addEventListener("input", function () {
-    var raw = (input.value || "").trim();
-    resultsDiv.innerHTML = "";
-    if (!raw) return;
+  return text.substring(0, index) +
+         "<span class='hl'>" +
+         text.substring(index, index + query.length) +
+         "</span>" +
+         text.substring(index + query.length);
+}
+input.addEventListener("input", function () {
+  var raw = (input.value || "").trim();
+  resultsDiv.innerHTML = "";
+  if (!raw) return;
 
-    var query = raw.replace(/^#/, "").toLowerCase().trim();
-    if (!query) return;
+  var query = raw.replace(/^#/, "").toLowerCase().trim();
+  if (!query) return;
 
-    Object.keys(infoData || {}).forEach(function (pref) {
-      var tags = (infoData[pref] && infoData[pref].tags) || [];
+  Object.keys(infoData || {}).forEach(function (pref) {
+    var tags = (infoData[pref] && infoData[pref].tags) || [];
 
-    var hit = tags.some(function(t) {
-      return String(t).toLowerCase().replace(/^#/, "") === query;
-    });
+    var hit = false;
 
-      if (hit) {
-        var div = document.createElement("div");
-        div.className = "resultItem";
-        div.innerHTML = renderResult(pref);
-        div.onclick = function () { openModal(pref); };
-        resultsDiv.appendChild(div);
-      }
-    });
+    if (query.length >= 4) {
+      hit = tags.some(function(t) {
+        var tag = String(t).toLowerCase().replace(/^#/, "");
+        return tag.startsWith(query);
+      });
+    }
+
+    if (hit) {
+      var div = document.createElement("div");
+      div.className = "resultItem";
+      div.innerHTML = renderResult(pref);
+      div.onclick = function () { openModal(pref); };
+      resultsDiv.appendChild(div);
+    }
   });
+});
 
 });
