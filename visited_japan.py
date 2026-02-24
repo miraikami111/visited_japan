@@ -32,72 +32,74 @@ info_data = {
         "tags": ["#清水寺"],
     },
     "沖縄県": {
-        "images": ["images/okinawa/okinawa01.jpg"],
+        "images": ["images/okinawa/okinawa01.jpg",
+                   "images/okinawa/okinawa02.jpg",
+                   ],
         "text": "沖縄県：沖縄そば・海ぶどう",
         "tags": ["#sea"],
     },
     "神奈川県": {
         "images": ["images/kanagawa/kanagawa01.jpg"],
         "text": "神奈川県：湘南・横浜中華街",
-        "tags": ["#みなとみらい"],
+        "tags": ["#座間ひまわり","#mt.fuji",],
     },
     "長野県": {
-        "images": ["images/nagano/nagano01.jpg"],
+        # "images": ["images/nagano/nagano01.jpg"],
         "text": "長野県：信州そば",
         "tags": ["#白馬"],
     },
     "福岡県": {
-        "images": ["images/fukuoka/fukuoka01.jpg"],
+        # "images": ["images/fukuoka/fukuoka01.jpg"],
         "text": "福岡県：博多ラーメン・もつ鍋",
         "tags": ["#太宰府"],
     },
     "熊本県": {
         "images": ["images/kumamoto/kumamoto01.jpg"],
         "text": "熊本県：馬刺し",
-        "tags": ["#阿蘇山"],
+        "tags": ["#阿蘇山","#くまもん",],
     },
     "山口県": {
-        "images": ["images/yamaguchi/yamaguchi01.jpg"],
+        # "images": ["images/yamaguchi/yamaguchi01.jpg"],
         "text": "山口県：ふぐ",
         "tags": ["#角島"],
     },
     "静岡県": {
         "images": ["images/shizuoka/shizuoka01.jpg"],
         "text": "静岡県：うなぎ・しらす",
-        "tags": ["#富士山"],
+        "tags": ["#富士山","#mt.fuji"],
     },
     "大分県": {
-        "images": ["images/oita/oita01.jpg"],
+        # "images": ["images/oita/oita01.jpg"],
         "text": "大分県：とり天・温泉",
         "tags": ["#別府"],
     },
     "広島県": {
-        "images": ["images/hiroshima/hiroshima01.jpg"],
+        # "images": ["images/hiroshima/hiroshima01.jpg"],
         "text": "広島県：広島焼き・牡蠣",
         "tags": ["#宮島"],
     },
     "鳥取県": {
-        "images": ["images/tottori/tottori01.jpg"],
+        # "images": ["images/tottori/tottori01.jpg"],
         "text": "鳥取県：砂丘・梨",
         "tags": ["#鳥取砂丘"],
     },
     "栃木県": {
-        "images": ["images/tochigi/tochigi01.jpg"],
+        # "images": ["images/tochigi/tochigi01.jpg"],
         "text": "栃木県：いちご",
         "tags": ["#日光東照宮"],
     },
     "大阪府": {
-        "images": ["images/osaka/osaka01.jpg"],
+        # "images": ["images/osaka/osaka01.jpg"],
         "text": "大阪府：たこ焼き・お好み焼き",
         "tags": ["#大阪城"],
     },
     "兵庫県": {
-        "images": ["images/hyogo/hyogo01.jpg"],
+        # "images": ["images/hyogo/hyogo01.jpg"],
         "text": "兵庫県：神戸牛",
         "tags": ["#姫路城"],
     },
     "奈良県": {
-        "images": ["images/nara/nara01.jpg"],
+        # "images": ["images/nara/nara01.jpg"],
         "text": "奈良県：柿の葉寿司",
         "tags": ["#東大寺"],
     },
@@ -107,32 +109,34 @@ info_data = {
         "tags": ["#松島"],
     },
     "岐阜県": {
-        "images": ["images/gifu/gifu01.jpg"],
+        # "images": ["images/gifu/gifu01.jpg"],
         "text": "岐阜県：飛騨牛",
         "tags": ["#白川郷"],
     },
     "愛知県": {
-        "images": ["images/aichi/aichi01.jpg"],
+        # "images": ["images/aichi/aichi01.jpg"],
         "text": "愛知県：味噌カツ",
         "tags": ["#名古屋城"],
     },
     "千葉県": {
-        "images": ["images/chiba/chiba01.jpg"],
+        # "images": ["images/chiba/chiba01.jpg"],
         "text": "千葉県：落花生",
         "tags": ["#ディズニー"],
     },
     "山梨県": {
-        "images": ["images/yamanashi/yamanashi01.jpg"],
+        "images": ["images/yamanashi/yamanashi01.jpg",
+                   "images/yamanashi/yamanashi02.jpg"
+                   ],
         "text": "山梨県：ほうとう",
-        "tags": ["#富士山"],
+        "tags": ["#富士山","#mt.fuji",],
     },
     "群馬県": {
-        "images": ["images/gunma/gunma01.jpg"],
+        # "images": ["images/gunma/gunma01.jpg"],
         "text": "群馬県：焼きまんじゅう",
         "tags": ["#草津温泉"],
     },
     "茨城県": {
-        "images": ["images/ibaraki/ibaraki01.jpg"],
+        # "images": ["images/ibaraki/ibaraki01.jpg"],
         "text": "茨城県：納豆",
         "tags": ["#ひたち海浜公園"],
     },
@@ -170,7 +174,7 @@ Visited: {visited_count}/{total_pref} ({percent}%)
 """
 
 m.get_root().html.add_child(folium.Element(counter_html))
-# ===== ここまで =====
+
 
 
 
@@ -250,7 +254,6 @@ for feature in geo_json["features"]:
         )
     ).add_to(m)
 
-# ===== ここから追加（for ループの外！）=====
 
 # 地図HTMLを書き出す
 m.save("index.html")

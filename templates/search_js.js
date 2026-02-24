@@ -1,5 +1,19 @@
 console.log("search_js loaded!");
 
+function highlight(text, query) {
+  var lower = text.toLowerCase();
+  var index = lower.indexOf(query);
+  if (index === -1) return text;
+
+  return text.substring(0, index) +
+         "<span class='hl'>" +
+         text.substring(index, index + query.length) +
+         "</span>" +
+         text.substring(index + query.length);
+}
+
+
+
 var infoData = __INFO_JSON__;
 window.infoData = infoData;
 
@@ -127,19 +141,33 @@ function tooltipHtml(pref) {
 // =============================
 // 検索結果1件のHTML
 // =============================
-function renderResult(pref) {
+function renderResult(pref, query) {
   var images = (infoData[pref] && infoData[pref].images) || [];
   var tags = (infoData[pref] && infoData[pref].tags) || [];
   var imgHtml = "";
+
   if (images.length > 0) {
     imgHtml = '<img src="' + images[0] + '" style="width:60px;height:auto;border-radius:6px;">';
   }
+
+  // 🔥 ここで matchedTags をちゃんと作る
+  var matchedTags = tags
+    .filter(function(t) {
+      var clean = t.replace(/^#/, "").toLowerCase();
+      return clean.includes(query);
+    })
+    .map(function(t) {
+      var clean = t.replace(/^#/, "");
+      return "#" + highlight(clean, query);
+    })
+    .join(" ");
+
   return (
     '<div style="display:flex;align-items:center;gap:8px;">' +
       imgHtml +
       '<div>' +
         '<div style="font-weight:bold;">' + pref + '</div>' +
-        '<div style="font-size:12px;color:#666;">' + tags.join(' ') + '</div>' +
+        '<div style="font-size:12px;color:#666;">' + matchedTags + '</div>' +
       '</div>' +
     '</div>'
   );
@@ -224,42 +252,30 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("search UI not found");
     return;
   }
-// リアルタイムハイライト
-function highlight(text, query) {
-  var lower = text.toLowerCase();
-  var index = lower.indexOf(query);
-  if (index === -1) return text;
-
-  return text.substring(0, index) +
-         "<span class='hl'>" +
-         text.substring(index, index + query.length) +
-         "</span>" +
-         text.substring(index + query.length);
-}
 input.addEventListener("input", function () {
   var raw = (input.value || "").trim();
   resultsDiv.innerHTML = "";
   if (!raw) return;
 
   var query = raw.replace(/^#/, "").toLowerCase().trim();
-  if (!query) return;
 
   Object.keys(infoData || {}).forEach(function (pref) {
     var tags = (infoData[pref] && infoData[pref].tags) || [];
 
     var hit = false;
 
-    if (query.length >= 4) {
+    // 🔥 #から始まり、3文字以上
+    if (raw.startsWith("#") && query.length >= 3) {
       hit = tags.some(function(t) {
         var tag = String(t).toLowerCase().replace(/^#/, "");
-        return tag.startsWith(query);
+        return tag.includes(query);
       });
     }
 
     if (hit) {
       var div = document.createElement("div");
       div.className = "resultItem";
-      div.innerHTML = renderResult(pref);
+      div.innerHTML = renderResult(pref, query);
       div.onclick = function () { openModal(pref); };
       resultsDiv.appendChild(div);
     }
