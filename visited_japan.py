@@ -19,14 +19,14 @@ info_data = {
                    "images/hokkaido/hokkaido02.jpg",
                    "images/hokkaido/hokkaido03.jpg",
                    ],
-        "text": "#旭岳/2291🏔",
+        "text": "#旭岳/2291m🏔",
         "tags": ["#nature", "#旭岳", "#狼犬の森"],
         },
     "東京都": {
         "images": ["images/tokyo/tokyo01.jpg",
                    "images/tokyo/tokyo02.jpg",
                    ],
-        "text": "高尾山🏔",
+        "text": "高尾山/599m🏔",
         "tags": ["#skytree"],
     },
     "京都府": {
