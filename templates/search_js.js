@@ -150,7 +150,7 @@ function renderResult(pref, query) {
     imgHtml = '<img src="' + images[0] + '" style="width:60px;height:auto;border-radius:6px;">';
   }
 
-  // 🔥 ここで matchedTags をちゃんと作る
+  // ここで matchedTags をちゃんと作る
   var matchedTags = tags
     .filter(function(t) {
       var clean = t.replace(/^#/, "").toLowerCase();
@@ -264,7 +264,7 @@ input.addEventListener("input", function () {
 
     var hit = false;
 
-    // 🔥 #から始まり、2文字以上
+    // #から始まり、2文字以上
     if (raw.startsWith("#") && query.length >= 2) {
       hit = tags.some(function(t) {
         var tag = String(t).toLowerCase().replace(/^#/, "");
